@@ -19,6 +19,10 @@ export interface DestinationAndPolyline {
     encodedRoute: string;
     destination: Location;
     initialLocation: Location,
+    senderName: string,
+    destinationName: string,
+    estimateTime: string,
+    locationName: string,
 }
 
 export interface DestinationAndPolylineResponse {

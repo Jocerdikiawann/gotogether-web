@@ -18,12 +18,20 @@ interface PolylineState {
     polyline: string
 }
 
+interface InfoState {
+    senderName: string,
+    destinationName: string,
+    estimateTime: string,
+    locationName: string,
+}
+
 let client: AsyncClient;
 
 export const destination: Writable<DestinationState> = writable({ lat: 0, lng: 0 })
 export const location: Writable<LocationState> = writable({ lat: 0, lng: 0 })
 export const polyline: Writable<PolylineState> = writable({ polyline: "" })
 export const rotation: Writable<number> = writable(0)
+export const info: Writable<InfoState> = writable({ senderName: "", destinationName: "", estimateTime: "", locationName: "" })
 
 export const connectMqtt = async (options: IClientOptions, url: string, topic: string) => {
     client = new AsyncClient(connect(url, options));
@@ -49,12 +57,20 @@ export const disconnectMqtt = async () => {
 export const getDestination = async (url: string) => {
     const makeRequest = await fetch(url)
     const response = await makeRequest.json() as DestinationAndPolylineResponse
-    const destinationResponse = response.data.destination
-    const locationResponse = response.data.initialLocation
+    const data = response.data
+    const destinationResponse = data.destination
+    const locationResponse = data.initialLocation
 
     destination.set({
         lat: destinationResponse.latitude,
         lng: destinationResponse.longitude
+    })
+
+    info.set({
+        destinationName: data.destinationName,
+        locationName: data.locationName,
+        estimateTime: data.estimateTime,
+        senderName: data.senderName
     })
 
     location.set({
